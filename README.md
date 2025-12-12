@@ -68,3 +68,9 @@ Practical Tool: Can be extended into a real‑world weather dashboard.
 
 🔹Conclusion
 The Weather App is more than just a simple project. It is a demonstration of how thoughtful design, clear communication, and functional features can come together to create a professional‑grade application. With its dark theme, interactive buttons, and reliable error handling, it provides a polished user experience and serves as a strong addition to any developer’s portfolio.
+
+
+OUTPUT
+
+<img width="1908" height="1019" alt="Image" src="https://github.com/user-attachments/assets/4d0b2293-f05c-478d-aa59-8ac1626dbe44" />
+
