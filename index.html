@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #000000; /* full page black background */
+      padding: 40px;
+      text-align: center;
+      color: #ffffff; /* default text white */
+    }
+    h1 {
+      color: #ffffff;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      margin-right: 10px;
+      border: 1px solid #007bff;
+      border-radius: 4px;
+      background-color: #111111;
+      color: #ffffff;
+    }
+    input::placeholder {
+      color: #888888;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .spinner {
+      margin: 20px auto;
+      border: 6px solid #333;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #weatherBox {
+      margin: 20px auto;
+      padding: 20px;
+      width: 340px;
+      background-color: #111111; /* dark gray box */
+      border: 2px solid #007bff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(255,255,255,0.1);
+      display: block;
+      color: #ffffff;
+    }
+    #weatherDetails {
+      text-align: left;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    #weatherDetails p {
+      margin: 8px 0;
+      font-size: 18px;
+      color: #ffffff;
+    }
+    #weatherDetails p span {
+      font-weight: bold;
+      color: #007bff; /* blue labels */
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Weather App</h1>
+  <input type="text" id="cityInput" placeholder="Enter city name" />
+  <button onclick="getWeather()">Get Weather</button>
+  <div class="spinner" id="spinner"></div>
+
+  <div id="weatherBox">
+    <div id="weatherDetails">
+      <p style="text-align:center; color:#888888; font-weight:bold;">
+        Weather details will appear here
+      </p>
+    </div>
+    <!-- Refresh + Clear buttons inside the box -->
+    <div style="text-align:center; margin-top:15px;">
+      <button onclick="refreshWeather()">Refresh</button>
+      <button onclick="clearWeather()">Clear</button>
+    </div>
+  </div>
+
+  <script>
+    let lastCity = ""; // store last searched city
+
+    async function getWeather(cityFromRefresh = null) {
+      const cityInput = document.getElementById("cityInput");
+      const spinner = document.getElementById("spinner");
+      const weatherDetails = document.getElementById("weatherDetails");
+
+    
+      const city = cityFromRefresh ? cityFromRefresh : cityInput.value.trim();
+
+      if (!city) {
+        weatherDetails.innerHTML = `<p style="text-align:center; color:#DC3545; font-weight:bold;">Please enter a city name.</p>`;
+        return;
+      }
+     lastCity = city;
+     spinner.style.display = "block";
+      weatherDetails.innerHTML = `<p style="text-align:center; color:#007bff; font-weight:bold;">Fetching weather data...</p>`;
+
+      try {
+        const response = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+        const data = await response.json();
+
+        if (data.error) {
+          weatherDetails.innerHTML = `<p style="text-align:center; color:#DC3545; font-weight:bold;">${data.error}</p>`;
+        } else {
+          weatherDetails.innerHTML = `
+            <p><span>City:</span> ${data.city}</p>
+            <p><span>Temperature:</span> ${data.temperature}°C</p>
+            <p><span>Wind Speed:</span> ${data.windSpeed} m/s</p>
+          `;
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        weatherDetails.innerHTML = `<p style="text-align:center; color:#DC3545; font-weight:bold;">Error fetching weather data.</p>`;
+      } finally {
+        spinner.style.display = "none";
+      }
+    }
+function refreshWeather() {
+      if (lastCity) {
+        getWeather(lastCity);
+      } else {
+        document.getElementById("weatherDetails").innerHTML =
+          `<p style="text-align:center; color:#888888; font-weight:bold;">No city searched yet.</p>`;
+      }
+    }
+    function clearWeather() {
+      lastCity = "";
+      document.getElementById("cityInput").value = "";
+      document.getElementById("weatherDetails").innerHTML =
+        `<p style="text-align:center; color:#888888; font-weight:bold;">Weather details will appear here</p>`;
+    }
+  </script>
+</body>
+</html>
